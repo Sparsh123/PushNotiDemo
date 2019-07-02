@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,10 +14,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import java.io.IOException;
 
 public class SignUpActivity extends Activity {
 
@@ -29,6 +36,25 @@ public class SignUpActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(SignUpActivity.this, new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String authorizedEntity = "fireapp-9c768";
+                String scope = "FCM";
+                try {
+                    InstanceID.getInstance(SignUpActivity.this).deleteToken(authorizedEntity, scope);
+                }
+                catch (IOException e)
+                {
+
+                }
+                String updatedToken = instanceIdResult.getToken();
+                Log.v("TOKENNNNNNNNNNNNNN", updatedToken);
+
+            }
+        });
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
